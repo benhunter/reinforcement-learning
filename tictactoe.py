@@ -1,27 +1,78 @@
+import abc
 from enum import Enum
 import logging
-import sys
+
 
 DEBUG = False
 
 
 class PositionState(Enum):
-	EMPTY = ' '
-	X = 'X'
-	O = 'O'
+    EMPTY = ' '
+    X = 'X'
+    O = 'O'
 
-	def __str__(self):
-		if self == PositionState.EMPTY:
-			return ' '
-		elif self == PositionState.X:
-			return 'X'
-		elif self == PositionState.O:
-			return 'O'
+    def __str__(self) -> str:
+        if self == PositionState.EMPTY:
+            return ' '
+        elif self == PositionState.X:
+            return 'X'
+        elif self == PositionState.O:
+            return 'O'
+        else:
+            return ''
+
 
 class BoardState:
     def __init__(self):
         self.board = [[PositionState.EMPTY for _ in range(3)] for _ in range(3)]
         self.turn = PositionState.X
+
+
+class Player(metaclass=abc.ABCMeta):
+    @classmethod
+    def __subclasshook__(cls, subclass: type, /) -> bool:
+        return (hasattr(subclass, 'make_move') and
+            callable(subclass.make_move) and
+            hasattr(subclass, 'get_name') and
+            callable(subclass.get_name))
+
+    def __init__(self, symbol):
+        self.symbol = symbol
+
+    @abc.abstractmethod
+    def choose_move(self, board_state: BoardState) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_name(self):
+        raise NotImplementedError
+
+
+class HumanPlayer(Player):
+    def choose_move(self, board_state) -> int:
+        p = int(input('Enter position (1-9): '))
+        return p
+
+    def get_name(self) -> str:
+        return 'Human'
+
+
+class DumbPlayer(Player):
+    # Try all moves 1-9 until a valid move is found
+    def choose_move(self, board_state: BoardState) -> int:
+        logging.debug(f'{self.symbol}\'s turn. Making a move...')
+        for p in range(1, 10):
+            logging.debug(f'Trying move {p}')
+            x = (p - 1) % 3
+            y = (p - 1) // 3
+            logging.debug(f'x={x}, y={y}, board[{y}][{x}]={board_state.board[y][x]}')
+            if board_state.board[y][x] == PositionState.EMPTY:
+                logging.debug(f'Choosing move {p}')
+                return p
+        return 0
+
+    def get_name(self) -> str:
+        return 'Dumb - I play the next available position.'
 
 
 class Board:
@@ -50,7 +101,7 @@ class Board:
     def print_turn(self):
         print(f'{self.board_state.turn}\'s turn')
 
-    def make_move(self, x, y):
+    def make_move_at_xy(self, x, y):
         if x > 2 or x < 0 or y > 2 or y < 0:
             print('Invalid move')
             return
@@ -60,7 +111,7 @@ class Board:
         else:
             print('Invalid move')
 
-    def make_move(self, p) -> bool:
+    def make_move_at(self, p) -> bool:
         logging.debug(f'{self.board_state.turn}\'s turn. Making a move...')
         logging.debug(f'p={p}')
         logging.debug(f'self.board={self.board_state.board}')
@@ -109,31 +160,30 @@ class Board:
                     return False
         return True
 
-    def play(self):
-        while self.check_win() == False and self.check_tie() == False:
-            self.print_turn()
-            p = int(input('Enter position (1-9): '))
-            self.make_move(p)
-            self.print_board()
-        print(f'{self.winner} won! Game Over')
-
-    def play(self, p1, p2):
+    def play(self, p1: Player, p2: Player):
         logging.debug(f'Playing game')
         print(f'Player 1: {p1.get_name()} is {p1.symbol}')
         print(f'Player 2: {p2.get_name()} is {p2.symbol}')
+        assert p1.symbol != p2.symbol
+
         while self.check_win() == False and self.check_tie() == False:
             self.print_turn()
-            p1.make_move(self)
+            move = p1.choose_move(self.board_state)
+            self.make_move_at(move)
             self.print_board()
+
             if self.check_win() == True:
                 print(f'{self.winner} won! Game Over')
                 break
             if self.check_tie() == True:
                 print('Tie! Game Over')
                 break
+
             self.print_turn()
-            p2.make_move(self)
+            move = p2.choose_move(self.board_state)
+            self.make_move_at(move)
             self.print_board()
+
             if self.check_win() == True:
                 print(f'{self.winner} won! Game Over')
                 break
@@ -141,44 +191,6 @@ class Board:
                 print('Tie! Game Over')
                 break
             if DEBUG: input('Pausing for debug')
-
-
-class Player:
-    def __init__(self, symbol):
-        self.symbol = symbol
-
-    def make_move(self, board: Board):
-        raise NotImplementedError
-
-    def get_name(self) -> str:
-        raise NotImplementedError
-
-
-class HumanPlayer(Player):
-    def make_move(self, board):
-        p = int(input('Enter position (1-9): '))
-        board.make_move(p)
-
-    def get_name(self) -> str:
-        return 'Human'
-
-
-class DumbPlayer(Player):
-    # Try all moves 1-9 until a valid move is found
-    def make_move(self, board: Board):
-        logging.debug(f'{self.symbol}\'s turn. Making a move...')
-        for p in range(1, 10):
-            logging.debug(f'Trying move {p}')
-            x = (p - 1) % 3
-            y = (p - 1) // 3
-            logging.debug(f'x={x}, y={y}, board[{y}][{x}]={board.board_state.board[y][x]}')
-            if board.board_state.board[y][x] == PositionState.EMPTY:
-                logging.debug(f'Making move {p}')
-                if board.make_move(p):
-                    break
-
-    def get_name(self) -> str:
-        return 'Dumb - I play the next available position.'
 
 
 def main():

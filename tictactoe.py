@@ -190,18 +190,21 @@ class TicTacToeGame:
             if self.check_tie() == True:
                 print('Tie! Game Over')
                 break
-            if DEBUG: input('Pausing for debug')
+            if DEBUG: input('Pausing for debug. Enter to continue.')
 
 
 def main():
-	logging.basicConfig(level=logging.INFO)
-	print(f'Tic Tac Toe')
-	game = TicTacToeGame()
-	logging.debug(game)
-	p1 = DumbPlayer(PositionState.X)
-	p2 = DumbPlayer(PositionState.O)
-	game.play(p1, p2)
+    if DEBUG:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+    print(f'Tic Tac Toe')
+    game = TicTacToeGame()
+    logging.debug(game)
+    p1 = DumbPlayer(PositionState.X)
+    p2 = DumbPlayer(PositionState.O)
+    game.play(p1, p2)
 
 
 if __name__ == '__main__':
-	main()
+    main()

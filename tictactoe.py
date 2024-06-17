@@ -75,7 +75,7 @@ class DumbPlayer(Player):
         return 'Dumb - I play the next available position.'
 
 
-class Board:
+class TicTacToeGame:
     def __init__(self):
         self.board_state = BoardState()
         self.winner = PositionState.EMPTY
@@ -196,11 +196,11 @@ class Board:
 def main():
 	logging.basicConfig(level=logging.INFO)
 	print(f'Tic Tac Toe')
-	board = Board()
-	logging.debug(board)
+	game = TicTacToeGame()
+	logging.debug(game)
 	p1 = DumbPlayer(PositionState.X)
 	p2 = DumbPlayer(PositionState.O)
-	board.play(p1, p2)
+	game.play(p1, p2)
 
 
 if __name__ == '__main__':

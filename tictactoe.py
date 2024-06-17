@@ -1,6 +1,7 @@
 import abc
 from enum import Enum
 import logging
+from pprint import pprint
 
 
 DEBUG = False
@@ -27,6 +28,9 @@ class BoardState:
         self.board = [[PositionState.EMPTY for _ in range(3)] for _ in range(3)]
         self.turn = PositionState.X
 
+    def board_as_tuple(self):
+        return tuple(tuple(posn for posn in row) for row in self.board)
+
 
 class Player(metaclass=abc.ABCMeta):
     @classmethod
@@ -36,7 +40,7 @@ class Player(metaclass=abc.ABCMeta):
             hasattr(subclass, 'get_name') and
             callable(subclass.get_name))
 
-    def __init__(self, symbol):
+    def __init__(self, symbol: PositionState):
         self.symbol = symbol
 
     @abc.abstractmethod
@@ -73,6 +77,29 @@ class DumbPlayer(Player):
 
     def get_name(self) -> str:
         return 'Dumb - I play the next available position.'
+
+
+class RLPlayer(Player):
+    def __init__(self, symbol: PositionState):
+        super().__init__(symbol)
+        estimate_values = self.estimate_value()
+
+    def estimate_value(self):
+        board = BoardState()
+        values = {}
+        # pprint(board.board)
+        # pprint(board.board_as_tuple())
+        values[board.board_as_tuple()] = 0
+        board.board[0][0] = PositionState.X
+        values[board.board_as_tuple()] = 1
+        pprint(values)
+        raise NotImplementedError
+
+    def choose_move(self, board_state: BoardState) -> int:
+        return super().choose_move(board_state)
+
+    def get_name(self):
+        return super().get_name()
 
 
 class TicTacToeGame:
@@ -194,6 +221,9 @@ class TicTacToeGame:
 
 
 def main():
+    RLPlayer(PositionState.X)
+    return
+
     if DEBUG:
         logging.basicConfig(level=logging.DEBUG)
     else:

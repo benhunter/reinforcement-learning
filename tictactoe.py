@@ -31,6 +31,9 @@ class BoardState:
     def board_as_tuple(self):
         return tuple(tuple(posn for posn in row) for row in self.board)
 
+    def set_board_from_tuple(self, board_as_tuple):
+        self.board = [[x for x in y] for y in board_as_tuple]
+
 
 class Player(metaclass=abc.ABCMeta):
     @classmethod
@@ -86,13 +89,37 @@ class RLPlayer(Player):
 
     def estimate_value(self):
         board = BoardState()
+        states = [board.board_as_tuple()]
         values = {}
-        # pprint(board.board)
-        # pprint(board.board_as_tuple())
-        values[board.board_as_tuple()] = 0
-        board.board[0][0] = PositionState.X
-        values[board.board_as_tuple()] = 1
+
+        uniq_states = len(states)
+        pprint(states)
+
+        # Breadth-first search across all states
+        while len(states) > 0:
+            print(f'looping')
+            current = states.pop()
+            values[current] = 0
+
+            board.set_board_from_tuple(current)
+            for p in range(9):
+                x = (p - 1) % 3
+                y = (p - 1) // 3
+
+                if board.board[y][x] == PositionState.EMPTY:
+                    board.board[y][x] = PositionState.X
+                    board_tuple = board.board_as_tuple()
+                    states.append(board_tuple)
+
+                    board.board[y][x] = PositionState.O
+                    board_tuple = board.board_as_tuple()
+                    states.append(board_tuple)
+
+                    uniq_states += 2
+
+        print(f'unique states: {uniq_states}')
         pprint(values)
+        print(f'len(values): {len(values)}')
         raise NotImplementedError
 
     def choose_move(self, board_state: BoardState) -> int:

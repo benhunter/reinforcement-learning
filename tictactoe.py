@@ -92,7 +92,7 @@ class RLPlayer(Player):
         states = [board.board_as_tuple()]
         values = {}
 
-        uniq_states = len(states)
+        len_states = len(states)
         pprint(states)
 
         # Breadth-first search across all states
@@ -115,9 +115,9 @@ class RLPlayer(Player):
                     board_tuple = board.board_as_tuple()
                     states.append(board_tuple)
 
-                    uniq_states += 2
+                    len_states += 2
 
-        print(f'unique states: {uniq_states}')
+        print(f'states found: {len_states}')
         pprint(values)
         print(f'len(values): {len(values)}')
         raise NotImplementedError

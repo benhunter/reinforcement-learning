@@ -117,10 +117,9 @@ class RLPlayer(Player):
 
                     len_states += 2
 
-        print(f'states found: {len_states}')
-        pprint(values)
-        print(f'len(values): {len(values)}')
-        raise NotImplementedError
+        logging.debug(f'states found: {len_states}')
+        logging.debug(values)
+        logging.debug(f'len(values): {len(values)}')
 
     def choose_move(self, board_state: BoardState) -> int:
         return super().choose_move(board_state)

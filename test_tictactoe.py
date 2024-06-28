@@ -1,3 +1,5 @@
+import logging, pytest
+
 from tictactoe import BoardState, TicTacToeGame, DumbPlayer, PositionState, RLPlayer
 
 
@@ -22,12 +24,18 @@ def test_BoardState_str():
 
 def test_BoardState_check_win():
     board = BoardState()
-    assert not board.check_win()
+    (win, winner) = board.check_win()
+
+    assert not win
+    assert winner == PositionState.EMPTY
 
     board.board[0][0] = PositionState.X
     board.board[1][1] = PositionState.X
     board.board[2][2] = PositionState.X
-    assert board.check_win()
+    win, winner = board.check_win()
+
+    assert win
+    assert winner == PositionState.X
 
 
 def test_BoardState_check_tie():
@@ -44,8 +52,6 @@ def test_BoardState_check_tie():
     board.board[2][1] = PositionState.X
     board.board[2][2] = PositionState.O
 
-    print(board)
-
     assert board.check_tie()
 
 
@@ -55,6 +61,9 @@ def test_TicTacToeGame_DumbPlayers():
     p2 = DumbPlayer(PositionState.O)
 
     assert str(game) == empty_board
+    assert not game.check_tie()
+    win, winner = game.board_state.check_win()
+    assert not win
     game.play(p1, p2)
 
 

@@ -1,5 +1,3 @@
-import pytest
-
 from tictactoe import BoardState, TicTacToeGame, DumbPlayer, PositionState, RLPlayer
 
 
@@ -24,12 +22,31 @@ def test_BoardState_str():
 
 def test_BoardState_check_win():
     board = BoardState()
-    assert board.check_win() == False
+    assert not board.check_win()
+
+    board.board[0][0] = PositionState.X
+    board.board[1][1] = PositionState.X
+    board.board[2][2] = PositionState.X
+    assert board.check_win()
 
 
-@pytest.mark.xfail(reason="Not implemented yet")
 def test_BoardState_check_tie():
-    assert False
+    board = BoardState()
+    assert not board.check_tie()
+
+    board.board[0][0] = PositionState.X
+    board.board[0][1] = PositionState.O
+    board.board[0][2] = PositionState.X
+    board.board[1][0] = PositionState.O
+    board.board[1][1] = PositionState.X
+    board.board[1][2] = PositionState.X
+    board.board[2][0] = PositionState.O
+    board.board[2][1] = PositionState.X
+    board.board[2][2] = PositionState.O
+
+    print(board)
+
+    assert board.check_tie()
 
 
 def test_TicTacToeGame_DumbPlayers():

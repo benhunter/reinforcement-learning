@@ -74,6 +74,13 @@ class BoardState:
 
         return False
 
+    def check_tie(self) -> bool:
+        for row in self.board:
+            for col in row:
+                if col == PositionState.EMPTY:
+                    return False
+        return not self.check_win()
+
 
 class Player(metaclass=abc.ABCMeta):
     @classmethod
@@ -213,12 +220,8 @@ class TicTacToeGame:
         return True
 
 
-    def check_tie(self):
-        for row in self.board_state.board:
-            for col in row:
-                if col == PositionState.EMPTY:
-                    return False
-        return True
+    def check_tie(self) -> bool:
+        return self.board_state.check_tie()
 
     def play(self, p1: Player, p2: Player):
         logging.debug(f'Playing game')

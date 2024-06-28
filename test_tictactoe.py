@@ -67,6 +67,9 @@ def test_TicTacToeGame_DumbPlayers():
     game.play(p1, p2)
 
 
-def test_RLPlayer_init():
-    RLPlayer(PositionState.X)
+def test_RLPlayer_init_estimates_values():
+    player = RLPlayer(PositionState.X)
     RLPlayer(PositionState.O)
+    RLPlayer(PositionState.X).estimate_value()
+
+    assert player.estimated_values[BoardState().board_as_tuple()] == 0.5

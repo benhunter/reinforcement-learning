@@ -153,7 +153,7 @@ class RLPlayer(Player):
         while len(states) > 0:
             print(f'looping')
             current = states.pop()
-            values[current] = 0
+            values[current] = 0.5
 
             board.set_board_from_tuple(current)
             for p in range(9):
@@ -173,7 +173,9 @@ class RLPlayer(Player):
 
         logging.debug(f'states found: {len_states}')
         logging.debug(values)
+        print(values)
         logging.debug(f'len(values): {len(values)}')
+        return values
 
     def choose_move(self, board_state: BoardState) -> int:
         return super().choose_move(board_state)

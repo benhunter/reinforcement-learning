@@ -3,6 +3,14 @@ import pytest
 from tictactoe import BoardState, TicTacToeGame, DumbPlayer, PositionState, RLPlayer
 
 
+empty_board = ''' | | 
+-----
+ | | 
+-----
+ | | 
+'''
+
+
 def test_BoardState_repr():
     new_board = BoardState()
     changed_board = BoardState()
@@ -11,12 +19,7 @@ def test_BoardState_repr():
 
 
 def test_BoardState_str():
-    assert str(BoardState()) == ''' | | 
------
- | | 
------
- | | 
-'''
+    assert str(BoardState()) == empty_board
 
 
 def test_TicTacToeGame_DumbPlayers():
@@ -24,6 +27,7 @@ def test_TicTacToeGame_DumbPlayers():
     p1 = DumbPlayer(PositionState.X)
     p2 = DumbPlayer(PositionState.O)
 
+    assert str(game) == empty_board
     game.play(p1, p2)
 
 

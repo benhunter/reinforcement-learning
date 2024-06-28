@@ -149,16 +149,7 @@ class TicTacToeGame:
         self.winner = PositionState.EMPTY
 
     def __str__(self) -> str:
-        s = ''
-        for y, row in enumerate(self.board_state.board):
-            for x, position in enumerate(row):
-                s += str(position)
-                if x < 2:
-                    s += '|'
-            s += '\n'
-            if y != 2:
-                s += '-----\n'
-        return s
+        return str(self.board_state)
 
     def __repr__(self) -> str:
         return ''

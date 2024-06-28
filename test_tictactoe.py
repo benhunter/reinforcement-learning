@@ -22,6 +22,16 @@ def test_BoardState_str():
     assert str(BoardState()) == empty_board
 
 
+def test_BoardState_check_win():
+    board = BoardState()
+    assert board.check_win() == False
+
+
+@pytest.mark.xfail(reason="Not implemented yet")
+def test_BoardState_check_tie():
+    assert False
+
+
 def test_TicTacToeGame_DumbPlayers():
     game = TicTacToeGame()
     p1 = DumbPlayer(PositionState.X)

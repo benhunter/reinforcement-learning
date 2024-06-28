@@ -49,6 +49,31 @@ class BoardState:
                 s += '-----\n'
         return s
 
+    def check_win(self) -> bool:
+        logging.debug(f'Checking for win')
+        # check rows
+        for row in self.board:
+            if row[0] == row[1] == row[2] and row[0] != PositionState.EMPTY:
+                self.winner = row[0]
+                return True
+
+        # check columns
+        for col in range(3):
+            if self.board[0][col] == self.board[1][col] == self.board[2][col] and self.board[0][col] != PositionState.EMPTY:
+                self.winner = self.board[0][col]
+                return True
+
+        # check diagonals
+        if self.board[0][0] == self.board[1][1] == self.board[2][2] and self.board[0][0] != PositionState.EMPTY:
+            self.winner = self.board[0][0]
+            return True
+
+        if self.board[0][2] == self.board[1][1] == self.board[2][0] and self.board[0][2] != PositionState.EMPTY:
+            self.winner = self.board[0][2]
+            return True
+
+        return False
+
 
 class Player(metaclass=abc.ABCMeta):
     @classmethod
@@ -187,30 +212,6 @@ class TicTacToeGame:
             return False
         return True
 
-    def check_win(self):
-        logging.debug(f'Checking for win')
-        # check rows
-        for row in self.board_state.board:
-            if row[0] == row[1] == row[2] and row[0] != PositionState.EMPTY:
-                self.winner = row[0]
-                return True
-
-        # check columns
-        for col in range(3):
-            if self.board_state.board[0][col] == self.board_state.board[1][col] == self.board_state.board[2][col] and self.board_state.board[0][col] != PositionState.EMPTY:
-                self.winner = self.board_state.board[0][col]
-                return True
-
-        # check diagonals
-        if self.board_state.board[0][0] == self.board_state.board[1][1] == self.board_state.board[2][2] and self.board_state.board[0][0] != PositionState.EMPTY:
-            self.winner = self.board_state.board[0][0]
-            return True
-
-        if self.board_state.board[0][2] == self.board_state.board[1][1] == self.board_state.board[2][0] and self.board_state.board[0][2] != PositionState.EMPTY:
-            self.winner = self.board_state.board[0][2]
-            return True
-
-        return False
 
     def check_tie(self):
         for row in self.board_state.board:
@@ -225,13 +226,13 @@ class TicTacToeGame:
         print(f'Player 2: {p2.get_name()} is {p2.symbol}')
         assert p1.symbol != p2.symbol
 
-        while self.check_win() == False and self.check_tie() == False:
+        while self.board_state.check_win() == False and self.check_tie() == False:
             self.print_turn()
             move = p1.choose_move(self.board_state)
             self.make_move_at(move)
             self.print_board()
 
-            if self.check_win() == True:
+            if self.board_state.check_win() == True:
                 print(f'{self.winner} won! Game Over')
                 break
             if self.check_tie() == True:
@@ -243,7 +244,7 @@ class TicTacToeGame:
             self.make_move_at(move)
             self.print_board()
 
-            if self.check_win() == True:
+            if self.board_state.check_win() == True:
                 print(f'{self.winner} won! Game Over')
                 break
             if self.check_tie() == True:
@@ -253,9 +254,6 @@ class TicTacToeGame:
 
 
 def main():
-    RLPlayer(PositionState.X)
-    return
-
     if DEBUG:
         logging.basicConfig(level=logging.DEBUG)
     else:

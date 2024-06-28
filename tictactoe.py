@@ -34,6 +34,21 @@ class BoardState:
     def set_board_from_tuple(self, board_as_tuple):
         self.board = [[x for x in y] for y in board_as_tuple]
 
+    def __repr__(self) -> str:
+        return str(self.board_as_tuple())
+
+    def __str__(self) -> str:
+        s = ''
+        for y, row in enumerate(self.board):
+            for x, position in enumerate(row):
+                s += str(position)
+                if x < 2:
+                    s += '|'
+            s += '\n'
+            if y != 2:
+                s += '-----\n'
+        return s
+
 
 class Player(metaclass=abc.ABCMeta):
     @classmethod
@@ -85,7 +100,7 @@ class DumbPlayer(Player):
 class RLPlayer(Player):
     def __init__(self, symbol: PositionState):
         super().__init__(symbol)
-        estimate_values = self.estimate_value()
+        self.estimated_values = self.estimate_value()
 
     def estimate_value(self):
         board = BoardState()

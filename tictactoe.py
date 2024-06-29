@@ -82,6 +82,7 @@ class BoardState:
         return (win, winner)
 
     def check_tie(self) -> bool:
+        logging.debug(f'Checking for tie')
         for row in self.board:
             for col in row:
                 if col == PositionState.EMPTY:
@@ -237,7 +238,8 @@ class TicTacToeGame:
         print(f'Player 2: {p2.get_name()} is {p2.symbol}')
         assert p1.symbol != p2.symbol
 
-        while not self.board_state.check_win() and not self.check_tie():
+        logging.info(f'Starting game loop')
+        while not self.board_state.check_win()[0] and not self.check_tie():
             self.print_turn()
             move = p1.choose_move(self.board_state)
             self.make_move_at(move)
@@ -262,6 +264,8 @@ class TicTacToeGame:
                 print('Tie! Game Over')
                 break
             if DEBUG: input('Pausing for debug. Enter to continue.')
+
+        logging.info(f'Done with game loop')
 
 
 def main():

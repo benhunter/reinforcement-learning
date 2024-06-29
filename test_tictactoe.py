@@ -55,7 +55,8 @@ def test_BoardState_check_tie():
     assert board.check_tie()
 
 
-def test_TicTacToeGame_DumbPlayers():
+def test_TicTacToeGame_DumbPlayers(caplog):
+    caplog.set_level(logging.DEBUG)
     game = TicTacToeGame()
     p1 = DumbPlayer(PositionState.X)
     p2 = DumbPlayer(PositionState.O)
@@ -65,6 +66,9 @@ def test_TicTacToeGame_DumbPlayers():
     win, winner = game.board_state.check_win()
     assert not win
     game.play(p1, p2)
+
+    win, winner = game.board_state.check_win()
+    assert win
 
 
 def test_RLPlayer_init_estimates_values():
